@@ -1,0 +1,45 @@
+name: Chatbot autofix
+
+on:
+  pull_request:
+    branches: [master]
+
+permissions:
+  contents: write
+
+jobs:
+  autofix:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.9.2 --activate
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Fix chatbot SDK
+        run: |
+          sed -i 's/isGroup: isJidGroup(jid),/isGroup: !!isJidGroup(jid),/' src/Walink/Bot.ts
+          yarn prettier --write src/Walink/Bot.ts src/Walink/Lite.ts src/Walink/Bot.test.ts
+
+      - name: Commit fixes
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add src/Walink/Bot.ts src/Walink/Lite.ts src/Walink/Bot.test.ts
+          git commit -m 'fix(walink): format chatbot SDK and normalize group flag'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
