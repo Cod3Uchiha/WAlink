@@ -1,0 +1,33 @@
+name: API endpoint discovery
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspect public API source and live catalog
+        shell: bash
+        run: |
+          set +e
+          : > endpoint-discovery.txt
+
+          echo '=== LIVE CATALOG ===' >> endpoint-discovery.txt
+          curl --location --silent --show-error --max-time 30 https://cod3uchiha.com/catalog >> endpoint-discovery.txt 2>&1
+          echo >> endpoint-discovery.txt
+
+          echo '=== AI SOURCE FILES ===' >> endpoint-discovery.txt
+          git clone --depth 1 https://github.com/Cod3Uchiha/api.git api-source >> endpoint-discovery.txt 2>&1
+          if [ -d api-source/src/endpoints/ai ]; then
+            find api-source/src/endpoints/ai -maxdepth 1 -type f -print -exec sh -c 'echo "--- $1"; sed -n "1,180p" "$1"' sh {} \; >> endpoint-discovery.txt 2>&1
+          fi
+
+          cat endpoint-discovery.txt
+          exit 0
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: endpoint-discovery
+          path: endpoint-discovery.txt
