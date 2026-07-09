@@ -1,24 +1,39 @@
 {
-  "name": "baileys",
+  "name": "@cod3uchiha/walink",
   "type": "module",
-  "version": "7.0.0-rc13",
-  "description": "A WebSockets library for interacting with WhatsApp Web",
+  "version": "7.0.0-walink.1",
+  "description": "WAlink: a reliability-focused TypeScript WebSocket library for WhatsApp Web, based on WhiskeySockets/Baileys",
   "keywords": [
     "whatsapp",
-    "automation"
+    "automation",
+    "walink",
+    "whatsapp-web",
+    "websocket",
+    "typescript",
+    "reconnect",
+    "queue"
   ],
-  "homepage": "https://github.com/WhiskeySockets/Baileys/",
+  "homepage": "https://github.com/Cod3Uchiha/WAlink",
   "repository": {
-    "url": "git@github.com:WhiskeySockets/Baileys.git"
+    "type": "git",
+    "url": "git+https://github.com/Cod3Uchiha/WAlink.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Cod3Uchiha/WAlink/issues"
   },
   "license": "MIT",
-  "author": "Rajeh Taher",
+  "author": "Takudzwa Mlambo (Cod3Uchiha)",
+  "contributors": [
+    "Rajeh Taher",
+    "WhiskeySockets/Baileys contributors"
+  ],
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
     "lib/**/*",
     "WAProto/**/*",
-    "engine-requirements.js"
+    "engine-requirements.js",
+    "FORK_NOTICE.md"
   ],
   "scripts": {
     "build:all": "npm run build && npm run build:docs",
@@ -36,8 +51,10 @@
     "prepare": "npm run build",
     "preinstall": "node ./engine-requirements.js",
     "release": "release-it",
-    "test": "node --experimental-vm-modules ./node_modules/.bin/jest --testMatch '**/*.test.ts'",
-    "test:e2e": "NODE_TLS_REJECT_UNAUTHORIZED=0 node --experimental-vm-modules ./node_modules/.bin/jest --runInBand --forceExit --testMatch '**/*.test-e2e.ts'",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --testMatch '**/*.test.ts'",
+    "test:e2e": "node ./scripts/run-e2e-tests.mjs",
+    "check": "yarn lint && yarn test && yarn build",
+    "doctor": "tsx ./scripts/doctor.ts",
     "update:version": "tsx ./scripts/update-version.ts"
   },
   "dependencies": {
