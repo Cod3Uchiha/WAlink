@@ -67,7 +67,7 @@ export class WAlinkMessageQueue {
 					attempt += 1
 				}
 			}
-		}, { throwOnTimeout: true })
+		}) as Promise<T>
 	}
 
 	pause(): void {
