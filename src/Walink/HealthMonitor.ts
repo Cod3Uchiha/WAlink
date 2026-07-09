@@ -32,9 +32,7 @@ export class WAlinkHealthMonitor {
 		const reachoutTimeLock = update.reachoutTimeLock ?? this.snapshotValue.reachoutTimeLock
 		const isRestricted = reachoutTimeLock?.isActive === true
 		const lastDisconnectAt = update.lastDisconnect?.date ?? this.snapshotValue.lastDisconnectAt
-		const lastError = update.lastDisconnect
-			? normalizeError(update.lastDisconnect.error)
-			: this.snapshotValue.lastError
+		const lastError = update.lastDisconnect ? normalizeError(update.lastDisconnect.error) : this.snapshotValue.lastError
 
 		let status: WAlinkHealthStatus
 		if (connection === 'open' && !isRestricted) {
@@ -61,9 +59,7 @@ export class WAlinkHealthMonitor {
 	snapshot(): WAlinkHealthSnapshot {
 		return {
 			...this.snapshotValue,
-			reachoutTimeLock: this.snapshotValue.reachoutTimeLock
-				? { ...this.snapshotValue.reachoutTimeLock }
-				: undefined
+			reachoutTimeLock: this.snapshotValue.reachoutTimeLock ? { ...this.snapshotValue.reachoutTimeLock } : undefined
 		}
 	}
 
