@@ -8,21 +8,23 @@ jobs:
   discover:
     runs-on: ubuntu-latest
     steps:
-      - name: Inspect public API source and live catalog
+      - name: Test public AI endpoints
         shell: bash
         run: |
           set +e
           : > endpoint-discovery.txt
 
-          echo '=== LIVE CATALOG ===' >> endpoint-discovery.txt
-          curl --location --silent --show-error --max-time 30 https://cod3uchiha.com/catalog >> endpoint-discovery.txt 2>&1
-          echo >> endpoint-discovery.txt
-
-          echo '=== AI SOURCE FILES ===' >> endpoint-discovery.txt
-          git clone --depth 1 https://github.com/Cod3Uchiha/api.git api-source >> endpoint-discovery.txt 2>&1
-          if [ -d api-source/src/endpoints/ai ]; then
-            find api-source/src/endpoints/ai -maxdepth 1 -type f -print -exec sh -c 'echo "--- $1"; sed -n "1,180p" "$1"' sh {} \; >> endpoint-discovery.txt 2>&1
-          fi
+          for endpoint in copilot gpt5; do
+            echo "=== /ai/${endpoint} ===" >> endpoint-discovery.txt
+            curl --location --silent --show-error --max-time 60 \
+              --user-agent 'WAlinkBot/1.0' \
+              --header 'Accept: application/json' \
+              --write-out '\nHTTP_STATUS=%{http_code}\nCONTENT_TYPE=%{content_type}\n' \
+              --get "https://cod3uchiha.com/ai/${endpoint}" \
+              --data-urlencode 'text=Reply with only the word working' \
+              >> endpoint-discovery.txt 2>&1
+            echo >> endpoint-discovery.txt
+          done
 
           cat endpoint-discovery.txt
           exit 0
