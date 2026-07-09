@@ -52,9 +52,9 @@ describe('WAlink chatbot interactive builders', () => {
 
 	test('rejects invalid interactive messages', () => {
 		expect(() => buildWAlinkNativeFlowButtons([])).toThrow('At least one button is required')
-		expect(() => buildWAlinkNativeFlowButtons(Array.from({ length: 11 }, (_, id) => ({ id: `${id}`, text: `${id}` })))).toThrow(
-			'A maximum of 10 buttons is supported'
-		)
+		expect(() =>
+			buildWAlinkNativeFlowButtons(Array.from({ length: 11 }, (_, id) => ({ id: `${id}`, text: `${id}` })))
+		).toThrow('A maximum of 10 buttons is supported')
 		expect(() => buildWAlinkListButton({ sections: [] })).toThrow('At least one list row is required')
 	})
 })

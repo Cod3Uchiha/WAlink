@@ -95,10 +95,7 @@ export interface WAlinkChatMessage {
 
 export type WAlinkMessageHandler = (message: WAlinkChatMessage) => void | Promise<void>
 
-export type WAlinkMiddleware = (
-	message: WAlinkChatMessage,
-	next: () => Promise<void>
-) => void | Promise<void>
+export type WAlinkMiddleware = (message: WAlinkChatMessage, next: () => Promise<void>) => void | Promise<void>
 
 export type WAlinkCommandContext = {
 	bot: WAlinkBot
@@ -250,7 +247,9 @@ export const buildWAlinkNativeFlowButtons = (buttons: WAlinkButton[]): NativeFlo
 	})
 }
 
-export const buildWAlinkListButton = (options: Pick<WAlinkListOptions, 'buttonText' | 'sections'>): NativeFlowButton => {
+export const buildWAlinkListButton = (
+	options: Pick<WAlinkListOptions, 'buttonText' | 'sections'>
+): NativeFlowButton => {
 	if (!options.sections.length || options.sections.every(section => !section.rows.length)) {
 		throw new Error('At least one list row is required')
 	}
@@ -270,11 +269,7 @@ export class WAlinkBot {
 	private readonly options: Required<
 		Pick<
 			WAlinkBotOptions,
-			| 'autoRead'
-			| 'ignoreFromMe'
-			| 'notifyOnly'
-			| 'emitCommandsToMessageHandlers'
-			| 'maxDedupeSize'
+			'autoRead' | 'ignoreFromMe' | 'notifyOnly' | 'emitCommandsToMessageHandlers' | 'maxDedupeSize'
 		>
 	> &
 		Pick<WAlinkBotOptions, 'onError'>
@@ -521,7 +516,7 @@ export class WAlinkBot {
 			sender,
 			pushName: raw.pushName,
 			fromMe: !!raw.key.fromMe,
-			isGroup: isJidGroup(jid),
+			isGroup: !!isJidGroup(jid),
 			timestamp: Number(raw.messageTimestamp || 0),
 			kind: kindFromContent(content),
 			text,
