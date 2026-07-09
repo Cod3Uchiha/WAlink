@@ -1,0 +1,33 @@
+name: AI bot example validation
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  validate-example:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          corepack prepare yarn@4.9.2 --activate
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Check formatting
+        run: yarn prettier --check Example/cod3uchiha-ai-bot.ts Example/COD3UCHIHA_AI_BOT.md
+
+      - name: Type-check example
+        run: >-
+          yarn tsc --noEmit --strict --skipLibCheck
+          --target ES2022 --module ESNext --moduleResolution bundler
+          --esModuleInterop --allowSyntheticDefaultImports
+          --lib ES2022,DOM Example/cod3uchiha-ai-bot.ts
