@@ -1,0 +1,48 @@
+name: WAlink Diagnostics
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Capture diagnostics
+        shell: bash
+        run: |
+          set +e
+          echo "=== TYPESCRIPT ===" > walink-diagnostics.log
+          yarn tsc --pretty false >> walink-diagnostics.log 2>&1
+          echo "" >> walink-diagnostics.log
+          echo "=== ESLINT ===" >> walink-diagnostics.log
+          yarn eslint src --ext .js,.ts >> walink-diagnostics.log 2>&1
+          echo "" >> walink-diagnostics.log
+          echo "=== TESTS ===" >> walink-diagnostics.log
+          node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand --testMatch '**/*.test.ts' >> walink-diagnostics.log 2>&1
+          exit 0
+
+      - name: Upload diagnostics
+        uses: actions/upload-artifact@v4
+        with:
+          name: walink-diagnostics
+          path: walink-diagnostics.log
+          if-no-files-found: error
