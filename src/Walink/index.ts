@@ -1,3 +1,5 @@
+export * from './Bot'
 export * from './HealthMonitor'
+export * from './Lite'
 export * from './MessageQueue'
 export * from './ReconnectPolicy'
